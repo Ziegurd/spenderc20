@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./node_modules/@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "./node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * This is an access control role for entities that may spend tokens
@@ -50,41 +51,37 @@ abstract contract SpenderRole {
 /**
  * @dev ERC20 spender logic
  */
-abstract contract ERC20Spendable is ERC20, SpenderRole {
+abstract contract ERC20Spendable is ERC20, SpenderRole, Ownable {
   /**
    * @dev Function to mint tokens
-   * @param from The address that will spend the tokens
    * @param value The amount of tokens to spend
    * @return A boolean that indicates if the operation was successful
    */
   function spend(
-    address from,
     uint256 value
   )
     public
     onlySpender
     returns (bool)
   {
-    _burn(from, value);
+    transfer(owner(), value);
     return true;
+  }
+
+  function _getOwner() view internal returns (address) {
+    return owner();
   }
 }
 
 contract AriaToken is ERC20, ERC20Spendable {
 
-    constructor() ERC20("NAME", "NAME") {}
+    constructor() ERC20("Wave", "WAVEY") {}
 
-    /**
-     * @dev For testing purposes, this allows anybody to mint tokens. Simply
-     *     remove this line for production use so the ERC20Mintable contract
-     *     can provide a more secure minter role.
-     */
-    function mint(address to, uint256 value) 
-        public 
-        /*onlyMinter*/
-        returns (bool)
-    {
-        _mint(to, value);
-        return true;
+    function mint(address to, uint256 value) public onlyOwner {
+      _mint(to, value * (10 ** 18));
+    }
+
+    function getOwner() public view returns(address) {
+      return _getOwner();
     }
 }

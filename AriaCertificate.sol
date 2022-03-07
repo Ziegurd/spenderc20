@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./node_modules/@nibbstack/erc721/src/contracts/tokens/nf-token.sol";
-import "./node_modules/@nibbstack/erc721/src/contracts/ownership/ownable.sol";
+import "@nibbstack/erc721/src/contracts/tokens/nf-token.sol";
+import "@nibbstack/erc721/src/contracts/ownership/ownable.sol";
 import {ERC20Spendable} from "./AriaToken.sol";
 
 /**
@@ -72,7 +72,7 @@ contract AriaCertificate is NFToken, Ownable
      */
     function create(bytes32 dataHash) external returns (uint) {
         // Take payment for this service
-        _mintingCurrency.spend(msg.sender, _mintingPrice);
+        _mintingCurrency.spend(_mintingPrice);
         
         // Create the certificate
         uint256 newCertificateId = nextCertificateId;
