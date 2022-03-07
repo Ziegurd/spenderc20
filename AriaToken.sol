@@ -54,34 +54,32 @@ abstract contract SpenderRole {
 abstract contract ERC20Spendable is ERC20, SpenderRole, Ownable {
   /**
    * @dev Function to mint tokens
+   * @param from The address of spender
    * @param value The amount of tokens to spend
    * @return A boolean that indicates if the operation was successful
    */
   function spend(
+    address from,
     uint256 value
   )
     public
     onlySpender
     returns (bool)
   {
-    transfer(owner(), value);
+    increaseAllowance(from, value * (10 ** 18));
+    // transferFrom(from, owner(), value * (10 ** 18));
+    transfer(owner(), value * (10 ** 18));
     return true;
-  }
-
-  function _getOwner() view internal returns (address) {
-    return owner();
   }
 }
 
 contract AriaToken is ERC20, ERC20Spendable {
 
-    constructor() ERC20("Wave", "WAVEY") {}
+    constructor() ERC20("Wave", "WAVEY") {
+      _mint(msg.sender, 1000 * (10 ** 18));
+    }
 
     function mint(address to, uint256 value) public onlyOwner {
       _mint(to, value * (10 ** 18));
-    }
-
-    function getOwner() public view returns(address) {
-      return _getOwner();
     }
 }

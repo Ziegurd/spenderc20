@@ -17,7 +17,7 @@ contract NftCert is ERC721Enumerable, Ownable {
 
   string baseURI;
   string public baseExtension = ".json";
-  uint256 public cost = 1 ether;
+  uint256 public cost = 1;
   uint256 public maxSupply = 50;
   uint256 public maxMintAmount = 4;
   bool public paused = false;
@@ -68,7 +68,7 @@ contract NftCert is ERC721Enumerable, Ownable {
     require(nextCertificateId < maxSupply);
 
     // Take payment for this service
-    _mintingCurrency.spend(cost * _mintAmount);
+    _mintingCurrency.spend(msg.sender, cost * _mintAmount);
 
     // Create the certificate
     uint256 newCertificateId = nextCertificateId;
